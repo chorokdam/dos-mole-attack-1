@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOS MOLE ATTACK</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="DOS MOLE ATTACK">
+<meta property="og:description" content="30초 동안 두더지를 잡아라! 최고 점수에 도전해보세요.">
+<meta property="og:url" content="https://dos-mole-attack-1.vercel.app/">
+<meta property="og:image" content="https://dos-mole-attack-1.vercel.app/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+body{background:#000;color:#00ff00;font-family:'Courier New',monospace;text-align:center;margin:0;padding:20px;user-select:none}
+h1{font-size:clamp(1.15rem,6vw,2rem);text-shadow:0 0 10px #00ff00;margin-bottom:5px;white-space:nowrap}
+.subtitle{color:#00aa00;margin-bottom:20px;font-size:.9rem}
+.status-panel{font-size:1.2rem;margin-bottom:20px;border:2px dashed #00ff00;display:inline-block;padding:10px 20px;background:#051105}
+.status-item{margin:5px 15px;display:inline-block}
+.game-board{display:grid;grid-template-columns:repeat(3,100px);grid-template-rows:repeat(3,100px);gap:15px;justify-content:center;margin:20px auto}
+.hole{background:#112211;border:3px solid #00aa00;position:relative;overflow:hidden;cursor:crosshair;border-radius:5px}
+.mole{width:100%;height:100%;background:#00ff00;position:absolute;bottom:-100%;transition:bottom .1s ease;display:flex;align-items:center;justify-content:center;color:#000;font-weight:bold;font-size:1.5rem}
+.mole.up{bottom:0}
+.btn{background:#000;color:#00ff00;border:2px solid #00ff00;padding:10px 20px;font-size:1.1rem;font-family:inherit;cursor:pointer;box-shadow:0 0 5px #00ff00;margin-top:10px}
+.btn:hover{background:#00ff00;color:#000}
+.game-over-screen{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);flex-direction:column;align-items:center;justify-content:center;z-index:10}
+.game-board,.hole,.mole,.btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+</style>
+</head>
+<body>
+<h1>[ DOS MOLE ATTACK ]</h1>
+<div class="subtitle">C:\GAMES\MOLE&gt; RUN GAME</div>
+<div class="status-panel"><div class="status-item">SCORE: <span id="score">000</span></div><div class="status-item">TIME: <span id="time-left">30</span>s</div></div>
+<div class="game-board">
+<div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div>
+<div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div>
+<div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div><div class="hole"><div class="mole">O_O</div></div>
+</div>
+<button class="btn" id="start-btn">START GAME</button>
+<div class="game-over-screen" id="game-over"><h1>=== GAME OVER ===</h1><p style="font-size:1.5rem;margin:20px 0">YOUR FINAL SCORE: <span id="final-score">0</span></p><button class="btn" id="restart-btn">RETRY (Y/N)</button></div>
+<script>
+const holes=document.querySelectorAll('.hole'),moles=document.querySelectorAll('.mole'),scoreBoard=document.getElementById('score'),timeLeftDisplay=document.getElementById('time-left'),startBtn=document.getElementById('start-btn'),gameOverScreen=document.getElementById('game-over'),finalScoreDisplay=document.getElementById('final-score'),restartBtn=document.getElementById('restart-btn');
+let lastHole,timeUp=false,score=0,countdown,moleTimer,timeLeft=30,bgmTimer=null,bgmStep=0;
+const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+function playBgmNote(freq,duration=.12){if(timeUp||audioCtx.state!=='running')return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='square';o.frequency.value=freq;g.gain.setValueAtTime(.035,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.start();o.stop(audioCtx.currentTime+duration)}
+function startBgm(){stopBgm();bgmStep=0;const m=[261.63,329.63,392,329.63,293.66,349.23,440,349.23,261.63,329.63,392,523.25,440,392,329.63,293.66];const tick=()=>{if(timeUp)return;playBgmNote(m[bgmStep++%m.length],.11);bgmTimer=setTimeout(tick,170)};tick()}
+function stopBgm(){if(bgmTimer){clearTimeout(bgmTimer);bgmTimer=null}}
+function playHitSound(){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.setValueAtTime(300,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(900,audioCtx.currentTime+.08);g.gain.setValueAtTime(.2,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+.08);o.start();o.stop(audioCtx.currentTime+.08)}
+function playGameOverSound(){[440,349.23,293.66,220].forEach((f,i)=>setTimeout(()=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+.2);o.start();o.stop(audioCtx.currentTime+.2)},i*140))}
+function randomHole(){const h=holes[Math.floor(Math.random()*holes.length)];if(h===lastHole)return randomHole();lastHole=h;return h}
+function peep(){const t=Math.random()*500+400,m=randomHole().querySelector('.mole');m.textContent='O_O';m.classList.add('up');moleTimer=setTimeout(()=>{m.classList.remove('up');if(!timeUp)peep()},t)}
+function startGame(){if(audioCtx.state==='suspended')audioCtx.resume();clearInterval(countdown);clearTimeout(moleTimer);moles.forEach(m=>{m.classList.remove('up');m.textContent='O_O'});score=0;timeLeft=30;timeUp=false;scoreBoard.textContent='000';timeLeftDisplay.textContent=timeLeft;gameOverScreen.style.display='none';startBtn.style.display='none';peep();startBgm();countdown=setInterval(()=>{timeLeft--;timeLeftDisplay.textContent=timeLeft;if(timeLeft<=0){clearInterval(countdown);timeUp=true;endGame()}},1000)}
+function endGame(){stopBgm();clearTimeout(moleTimer);moles.forEach(m=>m.classList.remove('up'));playGameOverSound();gameOverScreen.style.display='flex';finalScoreDisplay.textContent=score;startBtn.style.display='inline-block';startBtn.textContent='RESTART'}
+function bonk(e){if(!e.isTrusted||timeUp||!this.classList.contains('up')||this.textContent==='X_X')return;playHitSound();score+=10;this.textContent='X_X';scoreBoard.textContent=String(score).padStart(3,'0');setTimeout(()=>this.classList.remove('up'),120)}
+moles.forEach(m=>m.addEventListener('click',bonk));startBtn.addEventListener('click',startGame);restartBtn.addEventListener('click',startGame);document.querySelector('.game-board').addEventListener('dblclick',e=>e.preventDefault());
+</script>
+</body>
+</html>
