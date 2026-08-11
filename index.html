@@ -1,355 +1,362 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOS MOLE ATTACK</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DOS MOLE ATTACK</title>
 
-    <!-- Open Graph: 카카오톡/문자/SNS 링크 미리보기 -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="DOS MOLE ATTACK">
-    <meta property="og:description" content="30초 동안 두더지를 잡아라! 최고 점수에 도전해보세요.">
-    <meta property="og:url" content="https://dos-mole-attack-1.vercel.app/">
-    <meta property="og:image" content="https://dos-mole-attack-1.vercel.app/preview.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="DOS MOLE ATTACK 게임 미리보기">
-    <meta name="twitter:card" content="summary_large_image">
+  <!-- Link preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DOS MOLE ATTACK">
+  <meta property="og:description" content="30초 동안 두더지를 잡아라! 최고 점수에 도전해보세요.">
+  <meta property="og:url" content="https://dos-mole-attack-1.vercel.app/">
+  <meta property="og:image" content="https://dos-mole-attack-1.vercel.app/preview.png?v=3">
+  <meta property="og:image:secure_url" content="https://dos-mole-attack-1.vercel.app/preview.png?v=3">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DOS MOLE ATTACK 게임 미리보기">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DOS MOLE ATTACK">
+  <meta name="twitter:description" content="30초 동안 두더지를 잡아라! 최고 점수에 도전해보세요.">
+  <meta name="twitter:image" content="https://dos-mole-attack-1.vercel.app/preview.png?v=3">
+  <link rel="image_src" href="https://dos-mole-attack-1.vercel.app/preview.png?v=3">
 
-    <style>
-        body {
-            background-color: #000000;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            user-select: none;
-        }
+  <style>
+    * { box-sizing: border-box; }
 
-        h1 {
-            font-size: clamp(1.15rem, 6vw, 2rem);
-            text-shadow: 0 0 10px #00ff00;
-            margin-bottom: 5px;
-            white-space: nowrap;
-        }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #00ff00;
+      font-family: "Courier New", Courier, monospace;
+      text-align: center;
+      -webkit-text-size-adjust: 100%;
+    }
 
-        .subtitle {
-            color: #00aa00;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
+    body {
+      padding: 20px;
+      user-select: none;
+      -webkit-user-select: none;
+      overscroll-behavior: none;
+    }
 
-        .status-panel {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            border: 2px dashed #00ff00;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #051105;
-        }
+    h1 {
+      font-size: clamp(1.15rem, 6vw, 2rem);
+      text-shadow: 0 0 10px #00ff00;
+      margin: 0 0 5px;
+      white-space: nowrap;
+    }
 
-        .status-item {
-            margin: 5px 15px;
-            display: inline-block;
-        }
+    .subtitle {
+      color: #00aa00;
+      margin-bottom: 20px;
+      font-size: .9rem;
+    }
 
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 15px;
-            justify-content: center;
-            margin: 20px auto;
-        }
+    .status-panel {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      border: 2px dashed #00ff00;
+      display: inline-block;
+      padding: 10px 20px;
+      background: #051105;
+    }
 
-        .hole {
-            background-color: #112211;
-            border: 3px solid #00aa00;
-            position: relative;
-            overflow: hidden;
-            cursor: crosshair;
-            border-radius: 5px;
-        }
+    .status-item {
+      margin: 5px 15px;
+      display: inline-block;
+    }
 
-        .mole {
-            width: 100%;
-            height: 100%;
-            background-color: #00ff00;
-            position: absolute;
-            bottom: -100%;
-            transition: bottom 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000000;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 15px;
+      justify-content: center;
+      margin: 20px auto;
+      touch-action: none;
+      -ms-touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .mole.up {
-            bottom: 0;
-        }
+    .hole {
+      background: #112211;
+      border: 3px solid #00aa00;
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+      border-radius: 5px;
+      touch-action: none;
+      -ms-touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .btn {
-            background-color: #000000;
-            color: #00ff00;
-            border: 2px solid #00ff00;
-            padding: 10px 20px;
-            font-size: 1.1rem;
-            font-family: inherit;
-            cursor: pointer;
-            box-shadow: 0 0 5px #00ff00;
-            margin-top: 10px;
-        }
+    .mole {
+      width: 100%;
+      height: 100%;
+      background: #00ff00;
+      position: absolute;
+      bottom: -100%;
+      transition: bottom .1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.5rem;
+      touch-action: none;
+      -ms-touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .btn:hover {
-            background-color: #00ff00;
-            color: #000000;
-        }
+    .mole.up { bottom: 0; }
 
-        .game-over-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
+    .btn {
+      background: #000;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 0 5px #00ff00;
+      margin-top: 10px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        /* 모바일 게임 터치 시 더블탭 확대/하이라이트 방지 */
-        .game-board,
-        .hole,
-        .mole,
-        .btn {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
+    .btn:hover {
+      background: #00ff00;
+      color: #000;
+    }
 
-    </style>
+    .game-over-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .9);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
+  <h1>[ DOS MOLE ATTACK ]</h1>
+  <div class="subtitle">C:\GAMES\MOLE&gt; RUN GAME</div>
 
-    <h1>[ DOS MOLE ATTACK ]</h1>
-    <div class="subtitle">C:\GAMES\MOLE&gt; RUN GAME</div>
+  <div class="status-panel">
+    <div class="status-item">SCORE: <span id="score">000</span></div>
+    <div class="status-item">TIME: <span id="time-left">30</span>s</div>
+  </div>
 
-    <div class="status-panel">
-        <div class="status-item">SCORE: <span id="score">000</span></div>
-        <div class="status-item">TIME: <span id="time-left">30</span>s</div>
-    </div>
+  <div class="game-board" id="game-board">
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+    <div class="hole"><div class="mole">O_O</div></div>
+  </div>
 
-    <div class="game-board">
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-        <div class="hole"><div class="mole">O_O</div></div>
-    </div>
+  <button class="btn" id="start-btn">START GAME</button>
 
-    <button class="btn" id="start-btn">START GAME</button>
+  <div class="game-over-screen" id="game-over">
+    <h1>=== GAME OVER ===</h1>
+    <p style="font-size:1.5rem;margin:20px 0">
+      YOUR FINAL SCORE: <span id="final-score">0</span>
+    </p>
+    <button class="btn" id="restart-btn">RETRY (Y/N)</button>
+  </div>
 
-    <div class="game-over-screen" id="game-over">
-        <h1>=== GAME OVER ===</h1>
-        <p style="font-size: 1.5rem; margin: 20px 0;">
-            YOUR FINAL SCORE: <span id="final-score">0</span>
-        </p>
-        <button class="btn" id="restart-btn">RETRY (Y/N)</button>
-    </div>
+  <script>
+    const holes = document.querySelectorAll('.hole');
+    const moles = document.querySelectorAll('.mole');
+    const scoreBoard = document.getElementById('score');
+    const timeLeftDisplay = document.getElementById('time-left');
+    const startBtn = document.getElementById('start-btn');
+    const gameOverScreen = document.getElementById('game-over');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const restartBtn = document.getElementById('restart-btn');
+    const gameBoard = document.getElementById('game-board');
 
-    <script>
-        const holes = document.querySelectorAll('.hole');
-        const moles = document.querySelectorAll('.mole');
-        const scoreBoard = document.getElementById('score');
-        const timeLeftDisplay = document.getElementById('time-left');
-        const startBtn = document.getElementById('start-btn');
-        const gameOverScreen = document.getElementById('game-over');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const restartBtn = document.getElementById('restart-btn');
+    let lastHole;
+    let timeUp = false;
+    let score = 0;
+    let countdown;
+    let moleTimer;
+    let timeLeft = 30;
+    let bgmTimer = null;
+    let bgmStep = 0;
 
-        let lastHole;
-        let timeUp = false;
-        let score = 0;
-        let countdown;
-        let moleTimer;
-        let timeLeft = 30;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBgmNote(freq, duration = 0.12) {
+      if (timeUp || audioCtx.state !== 'running') return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
 
-        let bgmTimer = null;
-        let bgmStep = 0;
+    function startBgm() {
+      stopBgm();
+      bgmStep = 0;
+      const melody = [
+        261.63, 329.63, 392, 329.63,
+        293.66, 349.23, 440, 349.23,
+        261.63, 329.63, 392, 523.25,
+        440, 392, 329.63, 293.66
+      ];
 
-        function playBgmNote(freq, duration = 0.12) {
-            if (timeUp || audioCtx.state !== 'running') return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+      const tick = () => {
+        if (timeUp) return;
+        playBgmNote(melody[bgmStep++ % melody.length], 0.11);
+        bgmTimer = setTimeout(tick, 170);
+      };
+      tick();
+    }
+
+    function stopBgm() {
+      if (bgmTimer) {
+        clearTimeout(bgmTimer);
+        bgmTimer = null;
+      }
+    }
+
+    function playHitSound() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    function playGameOverSound() {
+      [440, 349.23, 293.66, 220].forEach((freq, i) => {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.2);
+        }, i * 140);
+      });
+    }
+
+    function randomHole() {
+      const hole = holes[Math.floor(Math.random() * holes.length)];
+      if (hole === lastHole) return randomHole();
+      lastHole = hole;
+      return hole;
+    }
+
+    function peep() {
+      const duration = Math.random() * 500 + 400;
+      const mole = randomHole().querySelector('.mole');
+      mole.textContent = 'O_O';
+      mole.classList.add('up');
+
+      moleTimer = setTimeout(() => {
+        mole.classList.remove('up');
+        if (!timeUp) peep();
+      }, duration);
+    }
+
+    function startGame() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      clearInterval(countdown);
+      clearTimeout(moleTimer);
+
+      moles.forEach(mole => {
+        mole.classList.remove('up');
+        mole.textContent = 'O_O';
+      });
+
+      score = 0;
+      timeLeft = 30;
+      timeUp = false;
+
+      scoreBoard.textContent = '000';
+      timeLeftDisplay.textContent = timeLeft;
+      gameOverScreen.style.display = 'none';
+      startBtn.style.display = 'none';
+
+      peep();
+      startBgm();
+
+      countdown = setInterval(() => {
+        timeLeft--;
+        timeLeftDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          timeUp = true;
+          endGame();
         }
+      }, 1000);
+    }
 
-        function startBgm() {
-            stopBgm();
-            bgmStep = 0;
-            const melody = [
-                261.63, 329.63, 392.00, 329.63,
-                293.66, 349.23, 440.00, 349.23,
-                261.63, 329.63, 392.00, 523.25,
-                440.00, 392.00, 329.63, 293.66
-            ];
+    function endGame() {
+      stopBgm();
+      clearTimeout(moleTimer);
+      moles.forEach(mole => mole.classList.remove('up'));
+      playGameOverSound();
+      gameOverScreen.style.display = 'flex';
+      finalScoreDisplay.textContent = score;
+      startBtn.style.display = 'inline-block';
+      startBtn.textContent = 'RESTART';
+    }
 
-            const tick = () => {
-                if (timeUp) return;
-                playBgmNote(melody[bgmStep % melody.length], 0.11);
-                bgmStep++;
-                bgmTimer = setTimeout(tick, 170);
-            };
-            tick();
-        }
+    function bonk(event) {
+      event.preventDefault();
+      const mole = event.currentTarget;
+      if (timeUp || !mole.classList.contains('up') || mole.textContent === 'X_X') return;
 
-        function stopBgm() {
-            if (bgmTimer) {
-                clearTimeout(bgmTimer);
-                bgmTimer = null;
-            }
-        }
+      playHitSound();
+      score += 10;
+      mole.textContent = 'X_X';
+      scoreBoard.textContent = String(score).padStart(3, '0');
 
-        function playHitSound() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.08);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.08);
-        }
+      setTimeout(() => {
+        mole.classList.remove('up');
+      }, 120);
+    }
 
-        function playGameOverSound() {
-            const notes = [440.00, 349.23, 293.66, 220.00];
-            notes.forEach((freq, index) => {
-                setTimeout(() => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.type = 'triangle';
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.2);
-                }, index * 140);
-            });
-        }
+    // pointerdown을 사용해 모바일 빠른 연속 탭에서 더블탭 확대를 피함
+    moles.forEach(mole => mole.addEventListener('pointerdown', bonk));
 
-        function randomHole(holes) {
-            const idx = Math.floor(Math.random() * holes.length);
-            const hole = holes[idx];
-            if (hole === lastHole) return randomHole(holes);
-            lastHole = hole;
-            return hole;
-        }
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
 
-        function peep() {
-            const time = Math.random() * (900 - 400) + 400;
-            const hole = randomHole(holes);
-            const mole = hole.querySelector('.mole');
-
-            mole.textContent = 'O_O';
-            mole.classList.add('up');
-
-            moleTimer = setTimeout(() => {
-                mole.classList.remove('up');
-                if (!timeUp) peep();
-            }, time);
-        }
-
-        function startGame() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            clearInterval(countdown);
-            clearTimeout(moleTimer);
-
-            moles.forEach(m => {
-                m.classList.remove('up');
-                m.textContent = 'O_O';
-            });
-
-            score = 0;
-            timeLeft = 30;
-            timeUp = false;
-
-            scoreBoard.textContent = '000';
-            timeLeftDisplay.textContent = timeLeft;
-            gameOverScreen.style.display = 'none';
-            startBtn.style.display = 'none';
-
-            peep();
-            startBgm();
-
-            countdown = setInterval(() => {
-                timeLeft--;
-                timeLeftDisplay.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    timeUp = true;
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        function endGame() {
-            stopBgm();
-            clearTimeout(moleTimer);
-            moles.forEach(m => m.classList.remove('up'));
-            playGameOverSound();
-            gameOverScreen.style.display = 'flex';
-            finalScoreDisplay.textContent = score;
-            startBtn.style.display = 'inline-block';
-            startBtn.textContent = 'RESTART';
-        }
-
-        function bonk(e) {
-            if (!e.isTrusted || timeUp || !this.classList.contains('up')) return;
-            if (this.textContent === 'X_X') return;
-
-            playHitSound();
-            score += 10;
-            this.textContent = 'X_X';
-            scoreBoard.textContent = String(score).padStart(3, '0');
-
-            setTimeout(() => {
-                this.classList.remove('up');
-            }, 120);
-        }
-
-
-        // 모바일/브라우저에서 빠른 연속 탭을 확대 동작으로 처리하지 않도록 방지
-        document.querySelector('.game-board').addEventListener('dblclick', (e) => {
-            e.preventDefault();
-        });
-
-        moles.forEach(mole => mole.addEventListener('click', bonk));
-        startBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', startGame);
-    </script>
+    // 게임판 자체의 브라우저 확대/스크롤 제스처 차단
+    gameBoard.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+    gameBoard.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+    gameBoard.addEventListener('dblclick', e => e.preventDefault());
+  </script>
 </body>
 </html>
